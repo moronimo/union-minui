@@ -25,6 +25,7 @@
 
 static SDL_Surface* screen;
 static int quit;
+static int resetFlag;
 static int show_menu;
 
 enum {
@@ -2939,7 +2940,7 @@ void Core_close(void) {
 
 ///////////////////////////////////////
 
-#define MENU_ITEM_COUNT 5
+#define MENU_ITEM_COUNT 6
 #define MENU_SLOT_COUNT 8
 
 enum {
@@ -2947,6 +2948,7 @@ enum {
 	ITEM_SAVE,
 	ITEM_LOAD,
 	ITEM_OPTS,
+	ITEM_RSET,
 	ITEM_QUIT,
 };
 
@@ -2956,6 +2958,7 @@ enum {
 	STATUS_LOAD = 11,
 	STATUS_OPTS = 23,
 	STATUS_DISC = 24,
+	STATUS_RSET = 25,
 	STATUS_QUIT = 30
 };
 
@@ -2970,6 +2973,7 @@ static struct {
 		[ITEM_SAVE] = "Save",
 		[ITEM_LOAD] = "Load",
 		[ITEM_OPTS] = "Options",
+		[ITEM_RSET] = "Reset",
 		[ITEM_QUIT] = "Quit",
 	}
 };
@@ -4038,6 +4042,10 @@ static void Menu_loop(void) {
 					Menu_options(&options_menu);
 					dirty = 1;
 				break;
+				case ITEM_RSET:
+					resetFlag = 1;
+					show_menu = 0;
+				break;
 				case ITEM_QUIT:
 					status = STATUS_QUIT;
 					show_menu = 0;
@@ -4344,6 +4352,10 @@ int main(int argc , char* argv[]) {
 	POW_disableAutosleep();
 	sec_start = SDL_GetTicks();
 	while (!quit) {
+		if (resetFlag) {
+			core.reset();
+			resetFlag = 0;
+		}
 		GFX_startFrame();
 		
 		core.run();
