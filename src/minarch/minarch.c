@@ -4126,7 +4126,7 @@ static void Menu_loop(void) {
 					// pill
 					GFX_blitPill(ASSET_WHITE_PILL, screen, &(SDL_Rect){
 						SCALE1(PADDING),
-						SCALE1(oy + PADDING + (i * PILL_SIZE)),
+						SCALE1(oy + PADDING + (i * (PILL_SIZE - 5))),
 						ow,
 						SCALE1(PILL_SIZE)
 					});
@@ -4137,7 +4137,7 @@ static void Menu_loop(void) {
 					text = TTF_RenderUTF8_Blended(font.large, item, COLOR_BLACK);
 					SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 						SCALE1(2 + PADDING + BUTTON_PADDING),
-						SCALE1(1 + PADDING + oy + (i * PILL_SIZE) + 4)
+						SCALE1(1 + PADDING + oy + (i * (PILL_SIZE - 5)) + 4)
 					});
 					SDL_FreeSurface(text);
 				}
@@ -4146,7 +4146,7 @@ static void Menu_loop(void) {
 				text = TTF_RenderUTF8_Blended(font.large, item, text_color);
 				SDL_BlitSurface(text, NULL, screen, &(SDL_Rect){
 					SCALE1(PADDING + BUTTON_PADDING),
-					SCALE1(oy + PADDING + (i * PILL_SIZE) + 4)
+					SCALE1(oy + PADDING + (i * (PILL_SIZE - 5)) + 4)
 				});
 				SDL_FreeSurface(text);
 			}
