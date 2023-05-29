@@ -25,7 +25,6 @@
 
 static SDL_Surface* screen;
 static int quit;
-static int resetFlag;
 static int show_menu;
 
 enum {
@@ -4050,7 +4049,7 @@ static void Menu_loop(void) {
 					dirty = 1;
 				break;
 				case ITEM_RSET:
-					resetFlag = 1;
+					core.reset();
 					show_menu = 0;
 				break;
 				case ITEM_QUIT:
@@ -4359,10 +4358,6 @@ int main(int argc , char* argv[]) {
 	POW_disableAutosleep();
 	sec_start = SDL_GetTicks();
 	while (!quit) {
-		if (resetFlag) {
-			core.reset();
-			resetFlag = 0;
-		}
 		GFX_startFrame();
 		
 		core.run();
