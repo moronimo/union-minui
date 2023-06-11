@@ -17,6 +17,6 @@ BUILD_HASH!=git rev-parse --short HEAD
 CFLAGS += -DBUILD_DATE=\"${BUILD_DATE}\" -DBUILD_HASH=\"${BUILD_HASH}\"
 
 all:
-	$(CC) $(TARGET).c ../common/scaler_neon.c ../common/utils.c ../common/api.c -o $(TARGET).elf $(CFLAGS) $(LDFLAGS)
+	$(CC) $(TARGET).c ../common/direct_overclock.c ./clockman.c ../common/scaler_neon.c ../common/utils.c ../common/api.c -o $(TARGET).elf $(CFLAGS) $(LDFLAGS)
 clean:
 	rm -f $(TARGET).elf

@@ -25,6 +25,8 @@
 #include "utils.h"
 #include "defines.h"
 
+#include "direct_overclock.h"
+
 ///////////////////////////////
 
 void LOG_note(int level, const char* fmt, ...) {
@@ -1213,6 +1215,7 @@ void PAD_poll(void) {
 		int id = -1;
 		if (event.type==SDL_KEYDOWN || event.type==SDL_KEYUP) {
 			uint8_t code = event.key.keysym.scancode;
+			
 				 if (code==CODE_UP) 	{ btn = BTN_UP; 		id = BTN_ID_UP; }
  			else if (code==CODE_DOWN)	{ btn = BTN_DOWN; 		id = BTN_ID_DOWN; }
 			else if (code==CODE_LEFT)	{ btn = BTN_LEFT; 		id = BTN_ID_LEFT; }
@@ -1541,9 +1544,7 @@ void POW_powerOff(void) {
 #define BACKLIGHT_PATH "/sys/class/backlight/backlight.2/bl_power"
 
 void POW_setCPUSpeed(int speed) {
-	char cmd[32];
-	sprintf(cmd,"overclock.elf %d\n", speed);
-	system(cmd);
+	setCPUFrequency(speed);
 }
 
 static void POW_enterSleep(void) {

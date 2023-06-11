@@ -20,12 +20,14 @@
 #include "utils.h"
 #include "api.h"
 #include "scaler_neon.h"
+#include "clockman.h"
 
 ///////////////////////////////////////
 
 static SDL_Surface* screen;
 static int quit;
 static int show_menu;
+static int cur_cpu_clock = 0;
 
 enum {
 	SCALE_NATIVE,
@@ -726,6 +728,7 @@ static char* overclock_labels[] = {
 	"Powersave",
 	"Normal",
 	"Performance",
+	"Auto",
 	NULL,
 };
 
@@ -794,7 +797,7 @@ static struct Config {
 				.desc	= "Over- or underclock the CPU to prioritize\npure performance or power savings.",
 				.default_value = 1,
 				.value = 1,
-				.count = 3,
+				.count = 4,
 				.values = overclock_labels,
 				.labels = overclock_labels,
 			},
@@ -862,9 +865,10 @@ static int Config_getValue(char* cfg, const char* key, char* out_value, int* loc
 static void setOverclock(int i) {
 	overclock = i;
 	switch (i) {
-		case 0: POW_setCPUSpeed(CPU_SPEED_POWERSAVE); break;
-		case 1: POW_setCPUSpeed(CPU_SPEED_NORMAL); break;
-		case 2: POW_setCPUSpeed(CPU_SPEED_PERFORMANCE); break;
+		case 0: POW_setCPUSpeed(CPU_SPEED_POWERSAVE); cur_cpu_clock=CPU_SPEED_POWERSAVE; break;
+		case 1: POW_setCPUSpeed(CPU_SPEED_NORMAL); cur_cpu_clock=CPU_SPEED_NORMAL; break;
+		case 2: POW_setCPUSpeed(CPU_SPEED_PERFORMANCE); cur_cpu_clock=CPU_SPEED_PERFORMANCE; break;
+		case 3: POW_setCPUSpeed(CPU_SPEED_PERFORMANCE); cur_cpu_clock=CPU_SPEED_PERFORMANCE; break;
 	}
 }
 static void Config_syncFrontend(int i, int value) {
@@ -2783,6 +2787,9 @@ static void video_refresh_callback(const void *data, unsigned width, unsigned he
 			x = MSG_blitDouble(use_double, x,y);
 			x = MSG_blitChar(DIGIT_PERCENT,x,y);
 		}
+
+		x += 16;
+		x = MSG_blitDouble(cur_cpu_clock/1000000.0, x, y);
 		
 		if (x>bottom_width) bottom_width = x; // keep the largest width because triple buffer
 		
@@ -4274,6 +4281,14 @@ static void trackFPS(void) {
 	}
 }
 
+static void setAutoFreq(void) {
+	int targetClock = getTargetClock( cpu_double, use_double );
+	if(targetClock != 0) {
+		cur_cpu_clock = targetClock;
+		POW_setCPUSpeed(targetClock);
+	}
+}
+
 static void limitFF(void) {
 	static uint64_t last_time = 0;
 	const uint64_t now = getMicroseconds();
@@ -4366,6 +4381,8 @@ int main(int argc , char* argv[]) {
 		if (show_menu) Menu_loop();
 		
 		trackFPS();
+		if (overclock == 3 ) setAutoFreq();
+
 	}
 	
 	Menu_quit();

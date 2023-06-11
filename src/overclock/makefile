@@ -6,9 +6,9 @@ TARGET = overclock
 
 CC = $(CROSS_COMPILE)gcc
 CFLAGS	= -Os -lrt -ldl -Wl,--gc-sections -s
-CFLAGS  += -I. -DPLATFORM=\"$(UNION_PLATFORM)\"
+CFLAGS  += -I. -I../common -DPLATFORM=\"$(UNION_PLATFORM)\"
 
 all:
-	$(CC) $(TARGET).c -o $(TARGET).elf $(CFLAGS)
+	$(CC) $(TARGET).c ../common/direct_overclock.c -o $(TARGET).elf $(CFLAGS)
 clean:
 	rm -rf $(TARGET).elf
